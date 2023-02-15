@@ -1,0 +1,26 @@
+create lambda and deploy lambda -> lambda code will be stored into the aws lambda repository in aws cloud.
+invoke lambda -> create a linux VM. on top of the VM, will add the language runtime and pull the class file from repository and load into memory
+                  create an instance of that class file. within the instance, it will invoke the function (lambda code we created)
+                  
+***** invoking types/methods
+invoke from console / CLI / SDK
+by other aws services such as S3, API Gateway url, message received in SNS topic, and DynamoDB etc
+
+***** invoking modes
+(1) sync : api gateway / Alexa speaker / clound front
+(2) async : not return response and just do the work, S3, SNS, could formation
+(3) polling: kinesis data streams, dynamoDB streams, SQS
+***** 
+
+**** Limits
+1000 executions at a time
+4 KB (space by all the environmental variables)
+64 MB for Sync
+258 KB for Async
+
+*** pricing
+time rounded to closest mili seconds
+and the memory we allocation - GB-Sec
+1,000,000 free invocations per month which is 400,000 GB-sec
+
+
