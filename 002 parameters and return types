@@ -1,4 +1,4 @@
-def simple_types(event, context):
+def simple_types(event, context):  # return types
   print(event)
   return event
   
@@ -25,3 +25,53 @@ def lambda_handler(event, context):
     # We have added a 1 second delay so you can see the time remaining in get_remaining_time_in_millis.
     time.sleep(1) 
     print("Lambda time remaining in MS:", context.get_remaining_time_in_millis())
+***************************  ***************************.  ***************************.  ***************************
+# when use api url or database name in your code - environment variables - can be defined in YAML file
+# under Resources -> Properties:
+Eivronment:
+  Variables:
+    restapiurl: .....
+    dbname: .....
+# in python script
+import os
+print(os.getenv('restapiurl'))
+# go to CLI
+sam build
+sam local invoke .....
+***************************  ***************************.  ***************************.  ***************************
+invoke remotely
+# go to lambda webpage, copy the function name there
+# go to CLI: aws lambda invoke --invocation-type Event --function-name <paste the copy> outputfile.txt
+(Event means async 202 code, request response means sync 200 code)
+(you may not see print in the outputfile.txt, but can be found in cloudwatch; return can be found in outputfile.txt)
+# sync way:
+aws lambda invoke --invocation-type RequestResponse --function-name <functionName> --payload "data" output.txt
+(if no payload, can be deleted)
+***************************  ***************************.  ***************************. how to improve cold start !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+cold start
+
+import random
+global_random_val
+def cold_start_basics(event, context):
+  local_random_val = random.random()
+  print(local_random_val)
+  print(global_random_val)       # global variable will not change, local variable will change each time you invoke the lambda function !!!!!!!!!!
+***** reason: when lambda service creates an instance of the lambda, it will do it the very first time the lambda is triggered and it will try to maintain
+that entire environment, including the python script that is loaded into memory for consecutive calls within the next few hours or minutes or seconds.
+the time is up to aws.
+# so it is good practice to define anything that can be reused across instances or reused across lambda invocation, we define that globally.
+it could be connections to external resources like DynamoDB. so they can be used across consecutive calls.
+
+***************
+Which of the following object can be passed in as an additional parameter to a lambda function to receive the lambda environment information like memory allocation ,execution time etc
+context 
+
+The same lambda function instance can be used across lambda invocations
+True
+
+
+
+
+
+
+  
