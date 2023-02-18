@@ -1,0 +1,43 @@
+# install aws CLI
+# install SAM CLI
+
+sam build
+sam deploy
+sam validate # validate template.yaml
+
+# test locally - so no need to deploy and then test every time - need have docker installed - need to open docker
+sam local invoke HelloWorldFunction --event events/event.json
+
+# run api gateway locally
+sam local start-api # simulate a gateway api # need have gateway api section in the yaml file
+curl http://localhost:3000/
+
+# access log
+sam logs -n HelloWorldFunction --stack-name firstlambda --tail
+
+# clean up
+aws cloudformation delete-stack --stack-name firstlambda
+
+ **************************************************************
+ The sam build command will copy the compiled code and config to which of the folders
+ .aws-sam
+ 
+ The deploy command will copy the packaged zip file to which of the following before the cloudformation stack can be created
+ S3 bucket
+ 
+ What is the type used for defining the AWS Lambda Function in template.yaml
+ AWS::Serverless::Function
+ 
+ Which of the following command can be used to test our lambda function locally
+ sam local invoke
+ 
+ To test a lambda locally we need to have Docker installed
+ True
+ 
+Which of the following command can be used to access the Lambda Function Logs
+sam logs
+
+
+
+
+
