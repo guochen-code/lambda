@@ -1,1 +1,64 @@
+ yaml file ---->
+ 
+ Resources:
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: orders_api/
+      Handler: create.lambda_handler
+      Runtime: python3.8
+      Events:                     # bind API Gateway to trigger Lambda
+        CreateOrders:
+          Type: Api
+          Properties:
+            Path: /orders
+            method: POST
+            
+create.py --->
 
+import json
+
+def lambda_handler(event, context):
+  order = json.loads(event['body'])
+  return {
+          'statusCode': 201,
+          'headers': {},
+          'body': json.dumps({'message': 'Order Created'})
+          }
+******************************************************************************************************************************************************     
+read.py --->
+
+import json
+
+def lambda_handler(event, context):
+  order = {'id':123, 'itemName': 'Mac Book Pro', 'quantity': 100}
+  return {
+          'statusCode': 200,
+          'headers': {},
+          'body': json.dumps(order)
+          }
+          
+ yaml file ---->
+ 
+ Resources:
+  ReadOrderFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: orders_api/
+      Handler: create.lambda_handler
+      Runtime: python3.8
+      Events:
+        ReadOrders:
+          Type: Api
+          Properties:
+            Path: /orders/{id}
+            method: GET
+            
+******************************************************************************************************************************************************     
+sam build
+sam deploy
+******************************************************************************************************************************************************     
+test API locally:
+sam local start-api # only work in you have the API gateway configured in your template.yaml file
+# make sure you have docker up and running for this simulation to work
+# this will give you al URL: localhost:3000, you use use postman to test this URL
