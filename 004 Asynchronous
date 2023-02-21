@@ -11,4 +11,125 @@ project name: patientcheckout
 template selection: 1
 # go to helloword folder and rename it to patientcheckout
 # open the folder in pycharm IDE
+# create patientcheckout.py
 
+import boto3
+import json
+
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+  bucket_name = event['Records'][0]['s3']['bucket']['name']
+  file_key = event['Records'][0]['s3']['object']['key']
+  obj = s3.get_object(Bucket=bucket_name, Key = file_key)
+  file_content = obj['Body'].read().decode('utf-8')
+  checkout_events = json.loads(file_content)
+  for each_event in checkout_events:
+  print(each_event)
+  
+******************************** yaml file
+Resources:
+  PatientCheckoutBucket:      # create bucket
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+  PatientCheckoutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: patient_checkout/
+      Handler: patientcheckout.lambda_handler
+      Runtime: python3.8
+      Policies:               # define policy
+        - S3ReadPolicy:
+          BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+      Events:                 # define events
+        S3Event: # can name whatever you want
+          Type: S3
+          Properties:
+            Bucket: !Ref PatientCheckoutBucket
+            Method: S3:ObjectCreated:* # object created in anyway
+            
+****************** test
+# go to requirements.txt: requests, boto3
+# go to command line:
+awslambdapython %: cd patientcheckout
+sam build
+sam deploy --guided # use guided for the very first time
+stack name [sam-app]: patientcheckout
+confirm changes before deploy: N
+allow sam cli Iam role creation: Y
+save arguments to configuration file:  Y
+Sam configuration file [samconfig.toml]: <enter>
+sam configuraiton environment [default]: <enter?
+
+# go to s3 console, find the patientcheckout, upload source data - json file
+# go to lambda - find the lambda function - go to monitor - view logs in cloudwatch
+
+****************** configure SNS topic - send these messages to the SNS topic
+yaml file --->
+
+Resources:
+  PatientCheckoutTopic:   # define topic -- resource name!!!
+    Type: AWS::SNS::Topic
+  PatientCheckoutBucket:
+    .......
+    .......
+  PatientCheckoutFunction:
+    .....
+    .....
+    Policies:
+      - S3ReadPolicy:
+        ......
+      - SNSPublishMessagePolicy:
+          TopicName: !GetAtt PatientCheckoutTopic.TopicName     # refer to above resource name
+    Environment:   # create environment variable
+      Variables:
+        PATIENT_CHECKOUT_TOPIC: !Ref PatientCheckoutTopic
+*****************************
+import boto3
+import json
+import os
+
+s3 = boto3.client('s3')
+snsclient = boto3.client('sns')
+
+def lambda_handler(event, context):
+topic = os.environ.get('PATIENT_CHECKOUT_TOPIC')
+  bucket_name = event['Records'][0]['s3']['bucket']['name']
+  file_key = event['Records'][0]['s3']['object']['key']
+  obj = s3.get_object(Bucket=bucket_name, Key = file_key)
+  file_content = obj['Body'].read().decode('utf-8')
+  checkout_events = json.loads(file_content)
+  for each_event in checkout_events:
+    print(each_event)
+    sns_client.publish(
+              TopicArn=topic,
+              Message=json.dumps({'default': json.dumps(each_event)}),
+              MessageStructure='json'
+              )
+*************************************************** finish
+*************************************************** create bill management lambda
+create billmanagement.py
+
+def lambda_hander(event, context):
+  event['Records'][0]['Sns']['Message']  #[0] only one record at a time in this use case
+  print(message)
+  
+yaml file --->
+Bill ManagementFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    CodeUri: patient_checkout/
+    Handler: billmanagement.lambda_handler
+    Runtime: python3.8
+    Events:
+      SNSEvent:
+        Type: SNS
+        Properties:
+          Topic: !Ref PatientCheckouTopic
+***********************
+test complete workflow: 
+sam build
+sam deploy
+# go to s3, upload source json file
+# go to lambda - two lambda functions: (1) patientcheckout; (2) bill management
