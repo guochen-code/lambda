@@ -1,1 +1,14 @@
+use case:
+patient checkout
+manager upload json file to S3 bucket, which contains info of patients checked out from the hospital
+new item created in s3 bucket, trigger lambda 
+
+****** create project
+sam init
+1 - AWS quick start templaets
+2 - python3.8
+project name: patientcheckout
+template selection: 1
+# go to helloword folder and rename it to patientcheckout
+# open the folder in pycharm IDE
 
