@@ -1,0 +1,54 @@
+A AWS Lambda function brings which of the following to Serverless Applications
+code
+
+Which of the following are the ways to trigger a lambda function
+cli/sdk
+test harness on the aws console
+an event source like s3 sns etc
+
+Which of the following can automate the build and deployment of a AWS Serverless project
+sam
+
+SAM is an extension or super set of which of the following Infra Structure as code components?
+cloud formation
+
+YAML is a superset of which of the following
+json
+
+The deploy command will copy the packaged zip file to which of the following before the cloudformation stack can be created
+S3
+
+Which of the following command can be used to access the Lambda Function Logs
+sam logs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
