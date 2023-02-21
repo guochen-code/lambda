@@ -1,0 +1,7 @@
+problem:
+lambda timeout ---> kafka performance lag
+
+every second streaming data received at cloud entry point --- API gateway 
+API gateway triggers lambda function that pass payload to kafka
+
+how to troubleshoot lambda timeout? why?
