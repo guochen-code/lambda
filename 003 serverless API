@@ -62,3 +62,196 @@ test API locally:
 sam local start-api # only work in you have the API gateway configured in your template.yaml file
 # make sure you have docker up and running for this simulation to work
 # this will give you al URL: localhost:3000, you use use postman to test this URL
+******************************************************************************************************************************************************
+use global properties
+
+yaml file --->
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  orders-api
+
+Globals:  # define properties that are common across your lambda functions
+ Function:
+   Runtime: python3.8 # apply to all the functions
+   Timeout: 30
+******************************************************************************************************************************************************
+create table resource
+
+yaml file --->
+
+Resources:
+ OrdersTable:             # not table name. it will be prefixed with stack name when cloud formation creates the resources in dynamoDB it will have a lot of automatically added to it randomly. so to retrieve the final table name, we can use a intrinsic function that is provided by cloud formation and SAM calls it ref
+  Type: AWA::Serverless::SimpleTable
+  Properties:
+   PrimaryKey:
+    Name: id
+    Type: Number          ### create a dynamoDB table
+    
+# will use intrinsic function in global section
+Globals:  
+ Function:
+   Runtime: python3.8 # apply to all the functions
+   Timeout: 30
+   Environment:
+    Variables:
+     ORDERS_TABLE: !Ref OrderTable
+******************************************************************************************************************************************************     
+# then we can read the environment variable --- in py files
+
+create.py --->
+
+import json
+import boto3
+import os
+
+def lambda_handler(event, context):
+  order = json.loads(event['body'])
+  dynamodb = boto3.resource('dynamodb')
+  table_name = os.environ.get('ORDERS_TABLE')
+  table = dynamodb.Table(table_name)
+  response = table.put_item(TableName = table_name, Item=Order)
+  print(response)
+  return {
+          'statusCode': 201,
+          'headers': {},
+          'body': json.dumps({'message': 'Order Created'})
+          }
+
+
+read.py --->
+
+import json
+import boto3
+import os
+from boto3.dynamodb.conditions import Key
+
+def lambda_handler(event, context):
+  order = {'id':123, 'itemName': 'Mac Book Pro', 'quantity': 100}
+  dynamodb = boto3.resource('dynamodb')
+  table_name=os.environ.get('ORDERS_TABLE')
+  table = dynamodb.Table(table_name)
+  order_id=int(event['pathParameters']['id])
+  response = table.query(KeyConditionExpression=Key('id').eq(order_id))
+  return {
+          'statusCode': 200,
+          'headers': {},
+          'body': json.dumps(response['Items']) # note capital I
+          }
+# problem: regular json library has issues with decimal numbers
+# solution: import simplejson as json (use a different library, but no need to change code above)
+
+******************************************************************************************************************************************************
+create security policies
+
+yaml file --->
+
+ Resources:
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: orders_api/
+      Handler: create.lambda_handler
+      Runtime: python3.8
+      Events:                     
+        CreateOrders:
+          Type: Api
+          Properties:
+            Path: /orders
+            method: POST
+      Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref OrdersTable
+# for read operation
+      Policies:
+             - DynamoDBReadPolicy:
+                 TableName: !Ref OrdersTable
+           
+******************************************************************************************************************************************************
+folder: orders_api
+files in the folder:
+__init__.py (from template)
+app.py
+create.py
+read.py
+requirements.txt : requests, boto3, simplejson
+
+******************************************************************************************************************************************************
+output resource info
+
+yaml file --->
+
+# previously you have to open aws web page to find the api url, use output you can output it
+# example: https://azvkmb06d4.execute-api.us-east-1.amazonaws.com/Prod
+# from above, only two parts are dynamic portions: (1) azvkmb06d4 (new api is created); (2) us-east-1
+Outputs:
+ CreateOrdersAPI:
+  Description: "API Gateway endpoint url for creating orders"
+  Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders" # subsititute for us during deployment
+
+******************************************************************************************************************************************************
+use GetAttr Instrinsic function
+
+yaml file --->
+
+Outputs:
+  CreateOrdersAPI:
+    Description: "API Gateway endpoint url for creating orders"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders" # subsititute for us during deployment
+  CreateOrderFunction:
+    Description: "Create Order function ARN"
+    Value: !GetAtt CreateOrderFunction.Arn
+  CreateOrderFunctionIamRole:
+    Description: "Create Order function IAM Role ARN"
+    Value: !GetAtt CreateOrderFunctionRole.Arn  
+
+******************************************************************************************************************************************************
+when a lambda function is triggered, the lambda service will check to see if an instance of that lambda already exist from previous invocation.
+If it doesm it will invoke the function on that instance.
+and that happens if we define certain resources, like in this case, the DynamoDB resource creation: dynamodb = boto3.resource('dynamodb')
+if we define this globally, then that can be reused instead of creating this resource or this connection to the dynamodb every time within the function
+
+create.py --->
+
+import json
+import boto3
+import os
+
+dynamodb = boto3.resource('dynamodb')
+table_name = os.environ.get('ORDERS_TABLE')
+  
+def lambda_handler(event, context):
+  order = json.loads(event['body'])
+  table = dynamodb.Table(table_name)
+  response = table.put_item(TableName = table_name, Item=Order)
+  print(response)
+  return {
+          'statusCode': 201,
+          'headers': {},
+          'body': json.dumps({'message': 'Order Created'})
+          }
+
+
+read.py --->
+
+import json
+import boto3
+import os
+from boto3.dynamodb.conditions import Key
+
+dynamodb = boto3.resource('dynamodb')
+table_name=os.environ.get('ORDERS_TABLE')
+  
+def lambda_handler(event, context):
+  # we don't need this line???: order = {'id':123, 'itemName': 'Mac Book Pro', 'quantity': 100}
+  table = dynamodb.Table(table_name)
+  order_id=int(event['pathParameters']['id])
+  response = table.query(KeyConditionExpression=Key('id').eq(order_id))
+  return {
+          'statusCode': 200,
+          'headers': {},
+          'body': json.dumps(response['Items']) # note capital I
+          }
+
+
