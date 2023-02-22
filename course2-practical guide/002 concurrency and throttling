@@ -37,3 +37,13 @@ because by default, lambda will process all the messages as fast as they can, so
 how to throttle your function down to zero concurrency to prevent all invocations in case some emergency you need to fix and prevent it being invoked by clients
 (1) on the main webpage - click throttle button (change back - go to reserved concurrency)
 (2) set reserved concurrency to 0
+
+
+pro tips:
+- alarm on throttles for early indications of issues
+- evaluate your concurrency needs and plan accordingly
+- client side: have your clients use exponential backoff to avoid retry storms
+- raise your memory limit can help, but be careful (run faster so less concurrent requests as individual execution run faster)
+- if clients wait for response: use a small amount of provisioned concunrrency to mitigate cold starts for latency sensitive apps (4 or 5)
+
+
