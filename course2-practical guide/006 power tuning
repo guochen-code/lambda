@@ -1,0 +1,23 @@
+power tuning deploy url:
+https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:451282441545:applications~aws-lambda-power-tuning
+
+go to step functions
+find powerTuningStateMachine which is created by the above url
+click start execution
+need to provide input:
+{
+    "lambdaARN": "<your-lambda-function-arn>", # copy your lambda function arn and paste here
+    "powerValues": [128, 256, 512, 1024, 2048, 3008],
+    "num": 10,
+    "payload": "{}",
+    "parallelInvocation": true,
+    "strategy": "cost"
+}
+click start execution
+
+go to step output tab. copy the https link under "visualization" key word
+paste into a web browser. you can see the plots
+
+pro tips
+can use step functions one more time for a narro range
+for example from above we know the optimal value is between 512 and 1024, you can set a new range between 512 and 1024 to test with
