@@ -1,0 +1,29 @@
+cold start
+decomposing a function execution
+(1) code download (first innovation)
+(2) start execution environment (python and node.js is faster than java and C#)
+(3) execute init code (portion of code outside the handler function, like import libraries and extract environment variables, and connection to database)
+(4) execute handler code
+
+full code start 
+start from (1)
+
+partial code start
+start from (3)
+
+warm start
+directly start with (4)
+
+*** warming ****
+cold start also occurs while scaling up
+hard limit: lambda will only scale up by 500 execution environments or 500 contianers per one minute
+example: you get 5000 request, all of a sudden as a burst, lambda is a little bit slow to scale up
+so during that time, you may see throttling
+
+strategies to minimize cold start
+- build a library that uses cloud watch events to wake up every minute or so and invoke your functions 20 times for example, in a parallel fashion.
+theoratically should create 20 different containers. if requests come in, you already hae warm containers that are ready to go
+- minimize number of library dependencies
+- only import what you need (don't import *)
+- raise memory configuration (increase cpu power and network capacity, better cpu, faster loading all dependencies and executing everything from your init step, normally cpu bound)
+- use provisioned concurrency (lambda function always on, expensive)
