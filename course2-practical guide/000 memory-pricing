@@ -1,0 +1,29 @@
+a lot of people tend to fall into the trap of seeing some kind of performance issue, maybe latencies a little bit higher than they think, just raising the memory
+, just throwing resources at the problem, trying to fix some other issues that could be another underlying issue that resources cannot help with.
+
+pro tips:
+- increase memory setting an reduce the impact of cold start (more vcpus and more network capacity)
+- certain languages have longer cold start duration. Best performance: node.js and python, slower end: java and C#
+- can help with ntworking connectivity speed
+- memory increase does not result in linear performance gain
+
+to find the sweet spot of the correct amount of memory - tool: lambda power tuning
+
+*************************************************************************************************************************************************************************
+pricing:
+(1) innovation count (how many)
+$0.2 per 1 million requests
+(2) memory (how powerful)
+the amount of memory you provision
+(3) Duration (how long)
+how long your invocations run for
+$0.0000166667 per GB second
+
+example: 3 million innvocations, 512 MB memory, 1 Second duration ---> $18.74/month (us-east-1)
+
+pro tips:
+- always start with low memory settings
+- once collect enough innocation history, use the compute optimizer tool
+- 1 million free requests per month and 400,000 GB-seconds
+
+*************************************************************************************************************************************************************************
