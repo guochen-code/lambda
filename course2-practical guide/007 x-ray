@@ -1,0 +1,17 @@
+x-ray tracing
+- application level debugging feature
+- generates trace information on your invocations
+- visualization aid for udnerstanding how much time is spent where
+- you can add custom segments to your code for function traces (how long one portion of code takes like http calls)
+
+pro tips
+- expensive
+$5 per 1 million traces recorded
+$0.05 per 1 million traces retrieved
+$0.05 per 1 million traces scanned
+- more useful for ad-hoc debugging (turn on for a short period for debugging)
+- consider using sampling (sample 10% of your data)
+
+
+
+
