@@ -1,0 +1,39 @@
+what is lambda concurrency
+- number of requests being served at a given moment
+- new containers are spawned for each concurrent request (cold start issue)
+- concurrency is a major scaling consideration and can cause app to fail due to throttling
+- default 1000 units of concurrenct per aws account per region
+*******!!!!!!!!!! 1000 units are shared among all the lambda functions in the account and region
+
+
+throttling aka rate exceeded
+- throttling is when lambda rejects a request
+- occurs when in flight inovacations exceeds available concurrency
+
+
+(1) reserved: reserve for this specific function of lambda 
+(if you reserve 200, only 800 are available to other lambda functions; if go over 200, you get throttles, like fixed and dedicated)
+dedicated concurrency pool
+*** use case: for SQS message processing, you want to slow down how fast your lambda function will process SQS messages
+have dependency in their lambda function code on a database, donot want to overstimulate that database and put too much pressure on it
+because by default, lambda will process all the messages as fast as they can, so lower the reserved concurrency number down to 5
+
+- a portion is always reserved for a specific function, even if there are no invocations
+- you can use reserved concurrecny to minimize or maximize your processing rate
+
+(2) unreserved: common concurrency pool (limit 1000)
+- free for all among all functions in an account per region
+- if one fucntion consumes all concurrency, the other will get throttled
+- limit can be raised via aws support ticket
+
+(3) provisioned: dedicated and 'always on' concurrency pool (deal with colde start issue)
+- pool of concurrency that is 'always on'
+- solves the cold start problem, kinda
+- supports autoscaling policies based on usage (always 30% more provisioned, limited by if there is reserved concurrency)
+- very expensive ($34/month for 5 units always on) (512MB-1 million requests/month-5 units) (similar to EC2 cost manybe)
+- blurs the lne between serverless and metal
+
+*************************************************************************************************************************************************************
+how to throttle your function down to zero concurrency to prevent all invocations in case some emergency you need to fix and prevent it being invoked by clients
+(1) on the main webpage - click throttle button (change back - go to reserved concurrency)
+(2) set reserved concurrency to 0
