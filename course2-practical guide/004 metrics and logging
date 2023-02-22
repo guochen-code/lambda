@@ -1,0 +1,60 @@
+errors:
+time out, dependency issues, errors in your input data ad errors in your logic
+
+set up use business metrics
+example:
+credit card transaction processing application 
+inputs show whether purchase or refund and maybe quantity of dollars and customers made the order
+metric on whether this transaction is for purchase or refund
+in this app, knowing how consumers shop in general, large majority of transactions are going to be purchases with a very small percent being refunds
+set up on metric on this and constantly monitoring the percentage of transactions, purchases or refunds
+if we start to see our refunds take up quite a bit above some baseline that may indicate some kind of fraud vector, or people getting too many credits or refunds they rightfully should be
+
+import top
+metrics donot help if you are not looking at them
+setup alarm on your metrics!
+
+other notable metrics
+- concurrent executions
+- unreserved concurrent executions (debug competition among lambda functions)
+
+****************************************************************************************************************************************************************
+logging
+- writing to stout automatically writes logs to cloudwatch
+- log lines by default include metadata about the execution
+
+cloudwatch logs insights
+- search for patterns across multiple functions at once
+- pay per use (amount of data scanned)
+
+
+fileds(@maxMemoryUsed/1024/1024) as MemoryMB
+| filter @type="REPORT" and (MemoryMB>=62 and MemoryMB<=70)
+| stats count(@billedDuration) by MermoryMB, @billDuration
+# if we see @billedDuration high and with many counts, we may need to increase memory to lower the duration
+
+filter @type="REPORT"
+| stats avg(@billedDuration) as BilledDuration,
+avg(@maxMemoryUsed/1024/1024) as MemoryUsedMB_scaled by bin(5m)
+# if billedduration tend to spike up at the same time you see spikes in max memory, 
+it may means that we have some invocations of lambda functions are working a lot harder than the others
+
+pro tips
+- don't be overly verbose with logging ($0.05 per GB)
+- embed log lines with important ids to make tracing easier !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+- use cloudwatch logs insights for fuzzy searching
+- set up a log retention policy or archive regularly (to S3)
+
+****************************************************************************************************************************************************************
+metric filters
+
+in lambda function code, just use print('UploadError 22'), no need to use cloudwatch sdk, save money
+
+go to log groups - select the one - go to metric filters - create metric filter - Filter patter: [metricName="UploadError",value]
+- log event messages: UploadError 2 - click Test pattern - click next-
+- Metric namespace: DemoNamespace - Metric name: UploadErrors - Metric value: $value
+- Default value (optional): 0 # means if no error, it will show "UploadError 0" # careful when you calculate avaerage of a list of values, not true average, latency
+- Unit(optional): Count
+- Filter name: UploadErrorFilter
+# for every error type you want to capture, you have to create a different metric filter !!!!!!!!!!!!!!!
+
