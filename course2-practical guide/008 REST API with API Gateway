@@ -1,0 +1,28 @@
+build a very simple HTTP get API using the console with lambda and API Gateway
+(1) create an API
+choose HTTP
+setup Integrations - choose the right lambda function within the right AWS Region
+(can add more integrations/lambda functions, for example, one function handles get, one handles post, one handles delete)
+(2) configure routes
+(add route for different methods if each lambda function handles one method)
+(3) define stages
+(4) review and create
+
+---> can see
+invoke URL to create data for later use !!!!
+<url>/getPerson paste in webbrowser - multiple times - will have logs
+<url>/getPerson?personId=5 - multiple times - will have logs
+
+lambda_function.py
+
+import json
+
+def lambda_hamder(event, context):
+  personId = event["queryStringParameters"]["personID"]            ###### use url as input parameter for lambda function
+  print('The personId extracted from the GET request is ' + str(personId))
+  # call database with personId=5
+  return {"firstName":"Daniel"}
+  
+*** pro tips
+every time you deploy your lambda function, there is going to be a new log stream gets created. so you are not going to see the new data here
+
