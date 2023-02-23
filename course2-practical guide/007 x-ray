@@ -12,6 +12,50 @@ $0.05 per 1 million traces scanned
 - more useful for ad-hoc debugging (turn on for a short period for debugging)
 - consider using sampling (sample 10% of your data)
 
+********************************************************************************************************************************************************
+lambda_function.py
 
+import json
+import sys
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
 
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
 
+patch_all()
+
+#setup sns client
+sns_client = boto3.client('sns')
+
+#setup dynamodb client + table reference
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('CustomerOrdersTable')
+
+def lambda_handler(event, context):
+  # query dynamodb
+  items = query_dynamo("1")
+  # filter items
+  filtered_items = filter_items(items)
+  #publish filtered items to sns
+  publish_to_sns(filtered_items)
+  
+def query_dynamo(customerId: str) -> list:
+  response = table.query(KeyConditionExpression=Key('CustomerId').eq('1'))
+  return response['Items']
+  
+@xray_recorder.capture("filter_items")
+def filter_items(items:list) -> list:
+  result = []
+  for item in items:
+    if item["OrderState"] == "APPROVED":
+      result.append(item['CustomerId'])
+  return result
+  
+def publish_to_sns(items:list):
+#raise Exception('Something went wrong')
+sns_client.publish(TopicArn="arn:aws:sns:us-east-1:755314965794:DemoSNSTopic", Message=json.dumps({'items':items}))
+
+# x-ray segments timeline: display the duration distribution across different segments such as lambda init, invocation, dynamodb, filter_items, SNS and overhead
+# view in x-ray analytics - service map - last 30 minutes --->
+# other aws services such as dynamodb - extra metrics - for example if we run into exception with dynamodb- able to see different types of exceptions
