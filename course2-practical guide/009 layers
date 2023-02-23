@@ -1,3 +1,8 @@
+problem to solve:
+import x-ray
+error: there is no module named x-ray
+
+solution: add a layer
 (1) download to current folder
 windows: pip install -t $PWD aws-xray-sdk
 (MAC: pip install -t . aws-xray-sdk)
