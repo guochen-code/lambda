@@ -1,0 +1,12 @@
+in order to communicate with MSK, need to be set up in the same VPC
+
+lambda security:
+
+--- provide AmazonVPCFullAccess to the lambda execution role
+go to permission - open role name url - add permissions dropdown menu - choose attach policy - choose AmazonVPCFullAccess
+
+--- configure VPC for lambda (choose both subnets and provide the security group of MSK cluster)
+go to VPC - edit - choose the vpc - choose all the subnets - security group: choose the MSK security group - save
+
+
+
