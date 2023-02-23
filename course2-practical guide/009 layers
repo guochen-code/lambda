@@ -23,12 +23,21 @@ go to lambda function - add a layer - choose a layer: custom layers - select the
 
 
 **********************************************************************************************************************************************************
-use command line on local machine
-
-
-
-
+use command line on local machine to create the lambda layer:
+sudo apt-get update
+sudo apt install python3-virtualenv
+virtualenv kafka_yt # venv name
+source kafka_yt/bin/activate
+python3 --version
+sudo apt intall python3-pip
+python3 -m pip install --upgrade pip
+mkdir -p lambda_layers/python/lib/python3.8/site-packages
+cd lambda_layers/python/lib/python3.8/site-packages
+pip install kafka-python -t .
+cd /mnt/c/Users/USER/lambda_layers
+sudo apt install zip
+zip -r kafka_yt_demo.zip *
 ***************
 alternatively,
-upload to S3
+upload the zip file to S3
 then in create layer section - choose upload a file from Amazon S3 - copy and paste the object url from S3
