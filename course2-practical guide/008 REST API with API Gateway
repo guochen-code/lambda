@@ -8,7 +8,7 @@ setup Integrations - choose the right lambda function within the right AWS Regio
 (3) define stages
 (4) review and create
 
----> can see
+---> can see endpoint url (### need to add resource path for the url to work)
 invoke URL to create data for later use !!!!
 <url>/getPerson paste in webbrowser - multiple times - will have logs
 <url>/getPerson?personId=5 - multiple times - will have logs
