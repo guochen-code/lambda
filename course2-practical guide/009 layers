@@ -1,0 +1,19 @@
+(1) download to current folder
+windows: pip install -t $PWD aws-xray-sdk
+(MAC: pip install -t . aws-xray-sdk)
+
+(2) zip the download
+(2.1) create a new directory called python # lambda needs to know which language this denpendency is with references to, layers are scoped to particular languages
+      and copy&paste all the downloaded files into this new directory
+(2.2) zip this python directory
+
+(3) create layer
+go back to lambda console - go to layers sections on the left menu - create layer
+- Name: x-ray - upload a zip file - x86_64 (arm64 is a new thing, not sure if the dependency will work on that) - compatible runtime: python3.8 
+- click create - 10.3MB file would take a few seconds
+
+(4) attach layer to lambda function
+go to lambda function - add a layer - choose a layer: custom layers - select the layer just created: x-ray 
+(if not see your custom lay, check if the runtime python versions are matched between your function and layer) - choose version - click add
+
+
