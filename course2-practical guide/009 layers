@@ -22,3 +22,13 @@ go to lambda function - add a layer - choose a layer: custom layers - select the
 (if not see your custom lay, check if the runtime python versions are matched between your function and layer) - choose version - click add
 
 
+**********************************************************************************************************************************************************
+use command line on local machine
+
+
+
+
+***************
+alternatively,
+upload to S3
+then in create layer section - choose upload a file from Amazon S3 - copy and paste the object url from S3
