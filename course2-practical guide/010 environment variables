@@ -1,0 +1,9 @@
+usecase:
+- stage: dev or prod environment
+- client endpoint url: dev or prod url
+- database connection string
+
+import os 
+db_connection_string = os.environ['DATABASE_CONNECTION_STRING']
+region = os.environ['AWS_REGION'] # automatically injected by aws
+
