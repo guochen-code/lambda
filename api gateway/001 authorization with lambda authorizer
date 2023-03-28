@@ -1,3 +1,10 @@
+********************************************************************************************************************************
+api gateway first forward the request to authorizer, if passed, it will forward the request to handler
+if not passed, it will not forward the request to the handler
+
+alternatively, we can use aws congnito - user pool
+********************************************************************************************************************************
+
 DemoHandler
 ---
 
