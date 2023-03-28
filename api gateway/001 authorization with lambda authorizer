@@ -22,11 +22,11 @@ def lambda_handler(event, context):
     print(event)
     
     #2 - See if the person's token is valid
-    if event['authorizationToken'] == 'abc123':
+    if event['authorizationToken'] == 'abc123':  # keyword 'authorizationToken' is manually set up in the aws api gateway, can be customized to anything
         auth = 'Allow'
     else:
         auth = 'Deny'
     
     #3 - Construct and return the response
-    authResponse = { "principalId": "abc123", "policyDocument": { "Version": "2012-10-17", "Statement": [{"Action": "execute-api:Invoke", "Resource": ["arn:aws:execute-api:us-east-1:YOURACCOUNTNUMBER:2ogoj2ul12/test/GET/customers"], "Effect": auth}] }}
+    authResponse = { "principalId": "abc123", "policyDocument": { "Version": "2012-10-17", "Statement": [{"Action": "execute-api:Invoke", "Resource": ["arn:aws:execute-api:us-east-1:<YOURACCOUNTNUMBER>:<api identifier>/test/GET/customers"], "Effect": auth}] }}.  # <api identifier>/*/* # give access to everything
     return authResponse
