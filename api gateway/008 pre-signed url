@@ -27,3 +27,6 @@ response={'url':'https://......com/','fields':{'key':'file_to_upload.jpg', 'AWSA
 ****************************************************************************************************************************************************************
 The files could be big and passing from client to server to S3 could take forever. A direct method is always better
 https://plainenglish.io/blog/access-files-from-aws-s3-using-pre-signed-urls-in-python
+
+high-level design
+user - api gateway - lambda -s3 # lambda here only repsonsible for generating the pre-signed url
