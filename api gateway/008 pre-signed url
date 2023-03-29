@@ -31,7 +31,7 @@ https://plainenglish.io/blog/access-files-from-aws-s3-using-pre-signed-urls-in-p
 high-level design
 user - api gateway - lambda -s3 # lambda here only repsonsible for generating the pre-signed url
 
------------------------------------------------------------------------------------------------------------------------- lambda access keys
+------------------------------------------------------------------------------------------------------------------------ local access keys --> lambda IAM role
 
 configuration - permissoin - AmazonS3FullAccess - 
 create api gateway - integrate with lambda function
