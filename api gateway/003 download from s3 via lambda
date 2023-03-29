@@ -10,7 +10,7 @@ def lambda_handler(event,context):
   
   try:
     #3 - fetch the file from s3
-    response.s3.get_object(Bucket=bucket,Key=key)
+    response = s3.get_object(Bucket=bucket,Key=key)
     
     #4- deserialize the file's content
     text=response["Body"].read().decode()
