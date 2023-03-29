@@ -1,0 +1,25 @@
+(1) s3
+create
+without public access
+
+------------------------------------------------------------------------------------------------------------------------
+import constants
+import boto3
+import requests
+
+object_name_to_upload='file_to_upload.jpg'
+
+s3_client=boto3.client('s3',aws_access_key_id=constant.access_key,aws_secret_access_key=constants.secret_access_key)
+
+# generate pre-signed url
+response = s3_clients.generate_presigned_post(Bucket='my_bucket',Key=object_name_to_upload,ExpiresIn=3) # 3 seconds
+
+print(response)
+
+# upload file to s3 using presigned url
+files={'file':open(object_name_to_upload,'rb')} # open file in binary format
+r=requests.post(response['url'],data=response['fields'],files=files)
+print(r.status_code)
+
+**** resposne example:
+response={'url':'https://......com/','fields':{'key':'file_to_upload.jpg', 'AWSAccessKeyId"':'....','policy':'......', 'signature':'....'}}
